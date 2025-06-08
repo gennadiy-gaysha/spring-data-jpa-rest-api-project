@@ -1,8 +1,8 @@
 package com.gaysha.spring_data_jpa_setup.repositories;
 
 import com.gaysha.spring_data_jpa_setup.TestDataUtil;
-import com.gaysha.spring_data_jpa_setup.domains.Author;
-import com.gaysha.spring_data_jpa_setup.domains.Book;
+import com.gaysha.spring_data_jpa_setup.domains.entities.AuthorEntity;
+import com.gaysha.spring_data_jpa_setup.domains.entities.BookEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +30,21 @@ public class BookRepositoryIntegrationTests {
 
     @Test
     public void testThatBookCanBeCreatedAndRecalled() {
-        Author author = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
 
-        Book book = TestDataUtil.createTestBookA(author);
+        BookEntity bookEntity = TestDataUtil.createTestBookA(authorEntity);
 
-        underTest.save(book);
+        underTest.save(bookEntity);
 
-        Optional<Book> result = underTest.findById(book.getIsbn());
+        Optional<BookEntity> result = underTest.findById(bookEntity.getIsbn());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getIsbn()).isEqualTo(book.getIsbn());
+        assertThat(result.get().getIsbn()).isEqualTo(bookEntity.getIsbn());
     }
 
     @Test
     public void testThatMultipleBooksCanBeCreatedAndRecalled() {
-        Author author = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
         // When we call the line below, it does two things:
         // - Saves the Author to the database (i.e., performs an INSERT or UPDATE).
         // - Returns the same Author entity — but now with any generated values filled
@@ -52,56 +52,56 @@ public class BookRepositoryIntegrationTests {
         // This is the standard behavior of Spring Data JPA’s save() method: it returns
         // a managed, updated version of the entity. You can and should use it when you
         // need the database-generated fields like @Id
-        Author savedAuthor = authorRepository.save(author);
+        AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
 
-        Book bookA = TestDataUtil.createTestBookA(savedAuthor);
-        underTest.save(bookA);
-        Book bookB = TestDataUtil.createTestBookB(savedAuthor);
-        underTest.save(bookB);
-        Book bookC = TestDataUtil.createTestBookC(savedAuthor);
-        underTest.save(bookC);
+        BookEntity bookEntityA = TestDataUtil.createTestBookA(savedAuthorEntity);
+        underTest.save(bookEntityA);
+        BookEntity bookEntityB = TestDataUtil.createTestBookB(savedAuthorEntity);
+        underTest.save(bookEntityB);
+        BookEntity bookEntityC = TestDataUtil.createTestBookC(savedAuthorEntity);
+        underTest.save(bookEntityC);
 
-        List<Book> result = underTest.findAll();
+        List<BookEntity> result = underTest.findAll();
         System.out.println(result);
         assertThat(result)
                 .hasSize(3)
-                .containsExactly(bookA, bookB, bookC);
+                .containsExactly(bookEntityA, bookEntityB, bookEntityC);
     }
 
     @Test
     public void testThatBookCanBeUpdated() {
         // SETUP
-        Author author = TestDataUtil.createTestAuthorA();
-        Author savedAuthor = authorRepository.save(author);
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
 
-        Book book = TestDataUtil.createTestBookA(savedAuthor);
-        underTest.save(book);
+        BookEntity bookEntity = TestDataUtil.createTestBookA(savedAuthorEntity);
+        underTest.save(bookEntity);
 
         // EXECUTE
-        book.setTitle("Updated");
-        underTest.save(book);
-        System.out.println(book);
+        bookEntity.setTitle("Updated");
+        underTest.save(bookEntity);
+        System.out.println(bookEntity);
 
         // ASSERT
-        Optional<Book> result = underTest.findById(book.getIsbn());
+        Optional<BookEntity> result = underTest.findById(bookEntity.getIsbn());
         assertThat(result).isPresent();
         System.out.println(result.get());
-        assertThat(result.get()).isEqualTo(book);
+        assertThat(result.get()).isEqualTo(bookEntity);
     }
 
     @Test
     public void testThatBookCanBeDeleted() {
-        Author author = TestDataUtil.createTestAuthorA();
-        System.out.println(author);
-        Author savedAuthor = authorRepository.save(author);
-        System.out.println(savedAuthor);
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        System.out.println(authorEntity);
+        AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
+        System.out.println(savedAuthorEntity);
 
-        Book book = TestDataUtil.createTestBookA(savedAuthor);
-        underTest.save(book);
+        BookEntity bookEntity = TestDataUtil.createTestBookA(savedAuthorEntity);
+        underTest.save(bookEntity);
 
-        Optional<Book> beforeDelete = underTest.findById(book.getIsbn());
-        underTest.deleteById(book.getIsbn());
-        Optional<Book> afterDelete = underTest.findById(book.getIsbn());
+        Optional<BookEntity> beforeDelete = underTest.findById(bookEntity.getIsbn());
+        underTest.deleteById(bookEntity.getIsbn());
+        Optional<BookEntity> afterDelete = underTest.findById(bookEntity.getIsbn());
 
         assertThat(beforeDelete).isPresent();
         assertThat(afterDelete).isNotPresent();

@@ -1,4 +1,4 @@
-package com.gaysha.spring_data_jpa_setup.domains;
+package com.gaysha.spring_data_jpa_setup.domains.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,18 +20,9 @@ import lombok.NoArgsConstructor;
 // database table:
 @Entity
 @Table(name = "authors")
-public class Author {
+public class AuthorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "author_id_seq")
-    /*// To customize the default settings:
-    @SequenceGenerator(
-            // Match with generator name in @GeneratedValue - Java-side name of the generator:
-            name = "author_id_seq",
-            // Database-side name of the sequence - the actual sequence name in DB:
-            sequenceName = "author_id_seq",
-            // how many IDs to allocate at once (1 is typical)
-            allocationSize = 2
-    )*/
     private Long id;
     private String name;
     private Integer age;

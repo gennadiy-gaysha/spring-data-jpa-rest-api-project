@@ -1,57 +1,57 @@
 package com.gaysha.spring_data_jpa_setup;
 
-import com.gaysha.spring_data_jpa_setup.domains.Author;
-import com.gaysha.spring_data_jpa_setup.domains.Book;
+import com.gaysha.spring_data_jpa_setup.domains.entities.AuthorEntity;
+import com.gaysha.spring_data_jpa_setup.domains.entities.BookEntity;
 
 public final class TestDataUtil {
     public TestDataUtil() {
     }
 
-    public static Author createTestAuthorA() {
-        return Author.builder()
+    public static AuthorEntity createTestAuthorA() {
+        return AuthorEntity.builder()
                 // .id(1L)
                 .name("Abigail Rose")
                 .age(80)
                 .build();
     }
 
-    public static Author createTestAuthorB() {
-        return Author.builder()
+    public static AuthorEntity createTestAuthorB() {
+        return AuthorEntity.builder()
                 // .id(2L)
                 .name("Jane Austen")
                 .age(41)
                 .build();
     }
 
-    public static Author createTestAuthorC() {
-        return Author.builder()
+    public static AuthorEntity createTestAuthorC() {
+        return AuthorEntity.builder()
                 // .id(3L)
                 .name("George Orwell")
                 .age(46)
                 .build();
     }
 
-    public static Book createTestBookA(final Author author) {
-        return Book.builder()
+    public static BookEntity createTestBookA(final AuthorEntity authorEntity) {
+        return BookEntity.builder()
                 .isbn("123-45-678")
                 .title("The Shadow in the Attic")
-                .author(author)
+                .authorEntity(authorEntity)
                 .build();
     }
 
-    public static Book createTestBookB(final Author author) {
-        return Book.builder()
+    public static BookEntity createTestBookB(final AuthorEntity authorEntity) {
+        return BookEntity.builder()
                 .isbn("123-45-678-0")
                 .title("Pride and Prejudice")
-                .author(author)
+                .authorEntity(authorEntity)
                 .build();
     }
 
-    public static Book createTestBookC(final Author author) {
-        return Book.builder()
+    public static BookEntity createTestBookC(final AuthorEntity authorEntity) {
+        return BookEntity.builder()
                 .isbn("123-45-678-1")
                 .title("1984")
-                .author(author)
+                .authorEntity(authorEntity)
                 .build();
     }
 }
