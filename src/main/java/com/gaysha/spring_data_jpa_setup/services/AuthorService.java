@@ -15,21 +15,21 @@ public class AuthorService {
 
     public AuthorDto createAuthor(AuthorDto authorDto) {
         // Convert DTO to Entity
-        AuthorEntity author = new AuthorEntity();
-        author = AuthorEntity.builder()
+        AuthorEntity author = AuthorEntity.builder()
                 .name(authorDto.getName())
                 .age(authorDto.getAge())
                 .build();
 
-
+        System.out.println(author.toString());
         // Save Entity
-        AuthorEntity savedAuthor = authorRepository.save(author);
+        author = authorRepository.save(author);
+        System.out.println(author.toString());
 
         // Convert Entity back to DTO
         return AuthorDto.builder()
-                .id(savedAuthor.getId())
-                .name(savedAuthor.getName())
-                .age(savedAuthor.getAge())
+                .id(author.getId())
+                .name(author.getName())
+                .age(author.getAge())
                 .build();
     }
 }
