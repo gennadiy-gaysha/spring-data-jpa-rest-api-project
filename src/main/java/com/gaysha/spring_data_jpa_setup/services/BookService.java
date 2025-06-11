@@ -3,6 +3,7 @@ package com.gaysha.spring_data_jpa_setup.services;
 import com.gaysha.spring_data_jpa_setup.domains.dto.BookDto;
 import com.gaysha.spring_data_jpa_setup.domains.entities.AuthorEntity;
 import com.gaysha.spring_data_jpa_setup.domains.entities.BookEntity;
+import com.gaysha.spring_data_jpa_setup.mapper.Mapper;
 import com.gaysha.spring_data_jpa_setup.repositories.AuthorRepository;
 import com.gaysha.spring_data_jpa_setup.repositories.BookRepository;
 import org.springframework.stereotype.Service;
@@ -10,34 +11,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookService {
     private final BookRepository bookRepository;
+    private final Mapper<BookEntity, BookDto> bookMapper;
     private final AuthorRepository authorRepository;
 
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookService(
+            BookRepository bookRepository,
+            Mapper<BookEntity, BookDto> bookMapper,
+            AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
+        this.bookMapper = bookMapper;
         this.authorRepository = authorRepository;
     }
 
     public BookDto createBook(BookDto bookDto) {
-        AuthorEntity author = authorRepository.findById(bookDto.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("Author not found!"));
+        AuthorEntity authorEntity = authorRepository
+                .findById(bookDto.getAuthorId())
+                .orElseThrow(() -> new RuntimeException("Author not found"));
 
-        // Convert DTO to Entity
-        BookEntity book = BookEntity
-                .builder()
-                .isbn(bookDto.getIsbn())
-                .title(bookDto.getTitle())
-                .authorEntity(author)
-                .build();
+        BookEntity bookEntity = bookMapper.mapFrom(bookDto);
+        bookEntity.setAuthorEntity(authorEntity);
 
-        // Save Entity
-        book = bookRepository.save(book);
+        bookEntity = bookRepository.save(bookEntity);
 
-        // Convert Entity back to DTO
-        return BookDto.builder()
-                .isbn(book.getIsbn())
-                .title(book.getTitle())
-                .authorId(book.getAuthorEntity().getId())
-                .authorEntity(book.getAuthorEntity())
-                .build();
+        return bookMapper.mapTo(bookEntity);
     }
 }

@@ -18,7 +18,7 @@ public class AuthorService {
         this.authorRepository = authorRepository;
         this.authorMapper = authorMapper;
     }
-
+    // Create method to be called during POST request
     public AuthorDto createAuthor(AuthorDto authorDto) {
         // Convert DTO to Entity
         AuthorEntity authorEntity = authorMapper.mapFrom(authorDto);

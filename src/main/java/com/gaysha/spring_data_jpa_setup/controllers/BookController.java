@@ -2,6 +2,8 @@ package com.gaysha.spring_data_jpa_setup.controllers;
 
 import com.gaysha.spring_data_jpa_setup.domains.dto.BookDto;
 import com.gaysha.spring_data_jpa_setup.services.BookService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +17,7 @@ public class BookController {
     }
 
     @PostMapping(path = "/books")
-    public BookDto createBook(@RequestBody BookDto bookDto){
-        return bookService.createBook(bookDto);
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto){
+        return new ResponseEntity<>(bookService.createBook(bookDto), HttpStatus.CREATED);
     }
 }
