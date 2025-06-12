@@ -13,6 +13,4 @@ public class BookDto {
     private String isbn;
     private String title;
     private Long authorId;
-    private AuthorDto authorDto;
-
 }
