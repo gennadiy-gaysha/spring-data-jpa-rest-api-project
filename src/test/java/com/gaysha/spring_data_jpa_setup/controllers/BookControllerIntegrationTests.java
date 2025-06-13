@@ -40,24 +40,23 @@ public class BookControllerIntegrationTests {
 
     @Test
     public void testThatCreateBookSuccessfullyReturnsHttp201Created() throws Exception{
-        // Create an AuthorEntity instance using test data
+        // Arrange: Create and persist an author
         AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
         // Save the author to the DB to generate and assign an ID
         authorEntity = authorRepository.save(authorEntity);
 
-        // Create a BookDto without an authorId (null)
+        // Arrange: Build a BookDto (no ISBN in the body — comes from the path)
         BookDto bookDto = BookDto.builder()
-                .isbn("9780099458326")
                 .title("Norwegian Wood")
+                .authorId(authorEntity.getId())
                 .build();
-
-        // Associate the book with the saved author
-        bookDto.setAuthorId(authorEntity.getId());
 
         // Convert the BookDto to a JSON string for the request body
         String bookJson = objectMapper.writeValueAsString(bookDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/books")
+        // Act & Assert: Perform PUT request with ISBN in path
+        // Validating the JSON response body returned by the controller
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/9780099458326")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bookJson))
                 // Expect a 201 Created response after successful POST
@@ -66,7 +65,9 @@ public class BookControllerIntegrationTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isbn")
                         .value("9780099458326"))
                 // Verify the returned JSON contains the correct title
+                // Look inside the JSON response body and extract the value at the field named "title"
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title")
+                        // Asserts that the value of the "title" field is exactly equal to "Norwegian Wood"
                         .value("Norwegian Wood"))
                 // Verify the returned JSON contains the correct author ID
                 .andExpect(MockMvcResultMatchers.jsonPath("$.authorId")

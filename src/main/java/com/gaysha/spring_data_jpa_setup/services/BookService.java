@@ -23,16 +23,22 @@ public class BookService {
         this.authorRepository = authorRepository;
     }
 
-    public BookDto createBook(BookDto bookDto) {
+    public BookDto createBook(String isbn, BookDto bookDto) {
+        // Look up the author in the DB using the ID provided in the bookDto
         AuthorEntity authorEntity = authorRepository
                 .findById(bookDto.getAuthorId())
                 .orElseThrow(() -> new RuntimeException("Author not found"));
-
+        // Set the ISBN from the path variable into the bookDto
+        bookDto.setIsbn(isbn);
+        // Convert BookDto to BookEntity
         BookEntity bookEntity = bookMapper.mapFrom(bookDto);
+        // Associate the retrieved AuthorEntity with the BookEntity
         bookEntity.setAuthorEntity(authorEntity);
 
+        // Save the BookEntity to the DB
         bookEntity = bookRepository.save(bookEntity);
 
+        // Convert the saved BookEntity back to BookDto and return it
         return bookMapper.mapTo(bookEntity);
     }
 }
