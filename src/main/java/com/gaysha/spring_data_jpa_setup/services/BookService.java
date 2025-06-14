@@ -8,6 +8,9 @@ import com.gaysha.spring_data_jpa_setup.repositories.AuthorRepository;
 import com.gaysha.spring_data_jpa_setup.repositories.BookRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class BookService {
     private final BookRepository bookRepository;
@@ -40,5 +43,12 @@ public class BookService {
 
         // Convert the saved BookEntity back to BookDto and return it
         return bookMapper.mapTo(bookEntity);
+    }
+
+    public List<BookDto> findAllBooks() {
+        List<BookEntity> bookEntities = bookRepository.findAll();
+        return bookEntities.stream()
+                .map(bookMapper::mapTo)
+                .collect(Collectors.toList());
     }
 }

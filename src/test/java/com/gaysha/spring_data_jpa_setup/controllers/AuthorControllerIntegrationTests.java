@@ -112,6 +112,8 @@ public class AuthorControllerIntegrationTests {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(
                         MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()")
+                        .value(2))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id")
                         .value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name")

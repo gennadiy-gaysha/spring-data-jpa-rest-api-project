@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaysha.spring_data_jpa_setup.TestDataUtil;
 import com.gaysha.spring_data_jpa_setup.domains.dto.BookDto;
 import com.gaysha.spring_data_jpa_setup.domains.entities.AuthorEntity;
+import com.gaysha.spring_data_jpa_setup.domains.entities.BookEntity;
 import com.gaysha.spring_data_jpa_setup.repositories.AuthorRepository;
+import com.gaysha.spring_data_jpa_setup.repositories.BookRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -30,12 +34,18 @@ public class BookControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final AuthorRepository authorRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public BookControllerIntegrationTests(MockMvc mockMvc, AuthorRepository authorRepository) {
+    public BookControllerIntegrationTests(
+            MockMvc mockMvc,
+            AuthorRepository authorRepository,
+            BookRepository bookRepository
+    ) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Test
@@ -72,5 +82,28 @@ public class BookControllerIntegrationTests {
                 // Verify the returned JSON contains the correct author ID
                 .andExpect(MockMvcResultMatchers.jsonPath("$.authorId")
                         .value(authorEntity.getId().intValue()));
+    }
+
+    @Test
+    public void testThatCreateAuthorSuccessfullyReturnsSavedAuthor() throws Exception {
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        BookEntity bookEntityA = TestDataUtil.createTestBookA(authorEntity);
+        BookEntity bookEntityB = TestDataUtil.createTestBookB(authorEntity);
+
+        bookRepository.saveAll(List.of(bookEntityA, bookEntityB));
+        authorRepository.save(authorEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/books")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()")
+                        .value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].isbn")
+                        .value("123-45-678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title")
+                        .value("The Shadow in the Attic"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].authorId")
+                        .value(1));
+
     }
 }
