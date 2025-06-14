@@ -1,7 +1,10 @@
 package com.gaysha.spring_data_jpa_setup.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaysha.spring_data_jpa_setup.TestDataUtil;
 import com.gaysha.spring_data_jpa_setup.domains.dto.AuthorDto;
+import com.gaysha.spring_data_jpa_setup.domains.entities.AuthorEntity;
+import com.gaysha.spring_data_jpa_setup.repositories.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +35,13 @@ public class AuthorControllerIntegrationTests {
     // Serialize Java objects to JSON
     // Deserialize JSON to Java objects
     private final ObjectMapper objectMapper;
+    private final AuthorRepository authorRepository;
 
     @Autowired
-    public AuthorControllerIntegrationTests(MockMvc mockMvc) {
+    public AuthorControllerIntegrationTests(MockMvc mockMvc, AuthorRepository authorRepository) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
+        this.authorRepository = authorRepository;
     }
 
     @Test
@@ -93,5 +98,31 @@ public class AuthorControllerIntegrationTests {
                         MockMvcResultMatchers.jsonPath("$.age")
                                 .value(46)
                 );
+    }
+
+    @Test
+    public void testThatFindAllAuthorsReturnsListOfAuthors() throws Exception{
+        AuthorEntity authorEntityA = TestDataUtil.createTestAuthorA();
+        AuthorEntity authorEntityB = TestDataUtil.createTestAuthorB();
+
+        authorRepository.save(authorEntityA);
+        authorRepository.save(authorEntityB);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(
+                        MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id")
+                        .value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name")
+                        .value("Abigail Rose"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age")
+                        .value(80))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id")
+                        .value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name")
+                        .value("Jane Austen"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].age")
+                        .value(41));
     }
 }

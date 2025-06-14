@@ -4,9 +4,12 @@ import com.gaysha.spring_data_jpa_setup.domains.dto.AuthorDto;
 import com.gaysha.spring_data_jpa_setup.services.AuthorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class AuthorController {
@@ -31,5 +34,18 @@ public class AuthorController {
     // - Injects authorDto parameter in the method
     public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto){
         return new ResponseEntity<>(authorService.createAuthor(authorDto), HttpStatus.CREATED);
+    }
+
+    // 1. A client (like a browser or frontend app) sends a GET request to "/authors".
+    @GetMapping(path = "/authors")
+    // 2. The method findAll() is triggered to get all authors from the database.
+    public ResponseEntity<List<AuthorDto>> findAllAuthors(){
+        List<AuthorDto> authorDtos = authorService.findAllAuthors();
+        // .ok() is a factory method that creates a ResponseEntity with HTTP status 200 OK
+        // and a body containing authorDtos,
+        // which will be automatically converted to JSON by Spring (using Jackson).
+
+        // The result (List<AuthorDto>) is returned as a JSON response with HTTP status 200 OK.
+        return ResponseEntity.ok(authorDtos);
     }
 }
