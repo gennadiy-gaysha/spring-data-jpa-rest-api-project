@@ -101,7 +101,7 @@ public class AuthorControllerIntegrationTests {
     }
 
     @Test
-    public void testThatFindAllAuthorsReturnsListOfAuthors() throws Exception{
+    public void testThatFindAllAuthorsReturnsListOfAuthors() throws Exception {
         AuthorEntity authorEntityA = TestDataUtil.createTestAuthorA();
         AuthorEntity authorEntityB = TestDataUtil.createTestAuthorB();
 
@@ -109,7 +109,7 @@ public class AuthorControllerIntegrationTests {
         authorRepository.save(authorEntityB);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/authors")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(
                         MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()")
@@ -127,4 +127,39 @@ public class AuthorControllerIntegrationTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].age")
                         .value(41));
     }
+
+    @Test
+    public void testThatGetOneAuthorsReturnsHttpStatus200WhenAuthorExists() throws Exception {
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        authorRepository.save(authorEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(
+                        MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testThatGetOneAuthorsReturnsHttpStatus404WhenAuthorDoesNotExists() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/99")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(
+                        MockMvcResultMatchers.status().isNotFound());
+    }
+    @Test
+    public void testThatGetOneAuthorsReturnsAuthorWhenAuthorExists() throws Exception {
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        authorRepository.save(authorEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/authors/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id")
+                        .value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name")
+                        .value("Abigail Rose"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.age")
+                        .value(80));
+    }
+
 }

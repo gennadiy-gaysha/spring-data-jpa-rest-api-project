@@ -7,6 +7,7 @@ import com.gaysha.spring_data_jpa_setup.repositories.AuthorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,5 +52,23 @@ public class AuthorService {
                 .map(authorMapper::mapTo)
                 // 4. Ends the stream operation and produces the final result: a list of DTOs.
                 .collect(Collectors.toList());
+    }
+
+    // Service fetches data from the repository and maps it to a DTO
+    public Optional<AuthorDto> getOneAuthor(Long id) {
+        // If found AuthorEntity,
+        // uses authorMapper.mapTo(...) to convert the AuthorEntity to AuthorDto.
+        // if not found, returns an empty Optional
+        return authorRepository.findById(id)
+                .map(authorMapper::mapTo);
+
+        // These 2 lines above substitute this code of block:
+        /*Optional<AuthorEntity> optionalAuthor = authorRepository.findById(id);
+        if (optionalAuthor.isPresent()) {
+            AuthorDto dto = authorMapper.mapTo(optionalAuthor.get());
+            return Optional.of(dto);
+        } else {
+            return Optional.empty();
+        }*/
     }
 }

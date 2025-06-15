@@ -4,10 +4,7 @@ import com.gaysha.spring_data_jpa_setup.domains.dto.AuthorDto;
 import com.gaysha.spring_data_jpa_setup.services.AuthorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,5 +44,20 @@ public class AuthorController {
 
         // The result (List<AuthorDto>) is returned as a JSON response with HTTP status 200 OK.
         return ResponseEntity.ok(authorDtos);
+    }
+
+    // Controller handles incoming HTTP GET requests
+    @GetMapping(path = "/authors/{id}")
+    ResponseEntity<AuthorDto> getOneAuthor(@PathVariable("id") Long id){
+        // Takes Optional from AuthorService and automatically:
+        // Returns 200 OK with the body if the value is present.
+        // Returns 404 Not Found if the Optional is empty.
+        return ResponseEntity.of(authorService.getOneAuthor(id));
+
+        // The line above substitutes this code block:
+        /*Optional<AuthorDto> optionalAuthorDto = authorService.getOneAuthor(id);
+        return optionalAuthorDto
+                .map(authorDto -> new ResponseEntity<>(authorDto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));*/
     }
 }
