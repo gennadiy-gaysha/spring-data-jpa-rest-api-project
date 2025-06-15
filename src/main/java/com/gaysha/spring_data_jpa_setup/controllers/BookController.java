@@ -30,4 +30,9 @@ public class BookController {
         List<BookDto> bookDtos = bookService.findAllBooks();
         return ResponseEntity.ok(bookDtos);
     }
+
+    @GetMapping(path = "books/{isbn}")
+    public ResponseEntity<BookDto> getOneBook(@PathVariable("isbn") String isbn){
+        return ResponseEntity.of(bookService.getOneBook(isbn));
+    }
 }

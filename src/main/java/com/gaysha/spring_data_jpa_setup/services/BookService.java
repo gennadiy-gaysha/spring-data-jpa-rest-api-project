@@ -9,6 +9,7 @@ import com.gaysha.spring_data_jpa_setup.repositories.BookRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,5 +51,11 @@ public class BookService {
         return bookEntities.stream()
                 .map(bookMapper::mapTo)
                 .collect(Collectors.toList());
+    }
+
+
+    public Optional<BookDto> getOneBook(String isbn) {
+        return bookRepository.findById(isbn)
+                .map(bookMapper::mapTo);
     }
 }

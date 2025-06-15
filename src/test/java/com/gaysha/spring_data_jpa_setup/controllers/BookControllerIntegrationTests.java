@@ -85,7 +85,7 @@ public class BookControllerIntegrationTests {
     }
 
     @Test
-    public void testThatCreateAuthorSuccessfullyReturnsSavedAuthor() throws Exception {
+    public void testThatFindAllBooksReturnsListOfBooks() throws Exception {
         AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
         BookEntity bookEntityA = TestDataUtil.createTestBookA(authorEntity);
         BookEntity bookEntityB = TestDataUtil.createTestBookB(authorEntity);
@@ -103,7 +103,50 @@ public class BookControllerIntegrationTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title")
                         .value("The Shadow in the Attic"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].authorId")
-                        .value(1));
-
+                        .value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].isbn")
+                        .value("123-45-678-0"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title")
+                        .value("Pride and Prejudice"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].authorId")
+                        .value(2))
+        ;
     }
+
+    @Test
+    public void testThatGetOneBookReturnsHttpStatus200WhenBookExists() throws Exception {
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        BookEntity bookEntity = TestDataUtil.createTestBookA(authorEntity);
+        bookRepository.save(bookEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/123-45-678")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(
+                        MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testThatGetOneBookReturnsHttpStatus404WhenBookDoesNotExists() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/123-45-678")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(
+                        MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void testThatGetOneBookReturnsBookWhenBookExists() throws Exception {
+        AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+        BookEntity bookEntity = TestDataUtil.createTestBookA(authorEntity);
+        bookRepository.save(bookEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/123-45-678")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isbn")
+                        .value("123-45-678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title")
+                        .value("The Shadow in the Attic"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.authorId")
+                        .value(1));
+    }
+
 }
