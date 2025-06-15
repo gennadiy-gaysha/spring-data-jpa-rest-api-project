@@ -60,4 +60,24 @@ public class AuthorController {
                 .map(authorDto -> new ResponseEntity<>(authorDto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));*/
     }
+
+    // Full Author update:
+    // any missing fields are overwritten with null (or defaults)
+    @PutMapping(path = "/authors/{id}")
+    public ResponseEntity<AuthorDto> updateAuthor(
+            @PathVariable("id") Long id,
+            @RequestBody AuthorDto authorDto){
+        return ResponseEntity.of(authorService.updateAuthor(id, authorDto));
+    }
+
+    // Partial Author update:
+    // @RequestBody contains only the fields to be updated
+    // other fields stay untouched
+
+    @PatchMapping(path = "/authors/{id}")
+    public ResponseEntity<AuthorDto> patchAuthor(
+            @PathVariable("id") Long id,
+            @RequestBody AuthorDto authorDto){
+        return ResponseEntity.of(authorService.patchAuthor(id, authorDto));
+    }
 }

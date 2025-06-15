@@ -71,4 +71,38 @@ public class AuthorService {
             return Optional.empty();
         }*/
     }
+
+    // Takes the id from the path and the updatedAuthorDto from the @RequestBody.
+    public Optional<AuthorDto> updateAuthor(Long id, AuthorDto updatedAuthorDto) {
+        // Attempts to find the author entity by ID.
+        // If found, the entity is passed into the map() function to perform the update.
+        // If not found the entity (i.e., the id doesn't exist in the database), it returns
+        // Optional.empty() (.map(...) is not executed then)
+        return authorRepository.findById(id)
+                .map(existingAuthorEntity -> {
+                    // Updates the fields of the existing entity with values from the DTO.
+                    existingAuthorEntity.setName(updatedAuthorDto.getName());
+                    existingAuthorEntity.setAge(updatedAuthorDto.getAge());
+                    // Saves the updated entity back to the database
+                    existingAuthorEntity = authorRepository.save(existingAuthorEntity);
+                    // Maps the updated entity to a DTO and returns it wrapped in Optional
+                    return authorMapper.mapTo(existingAuthorEntity);
+                });
+    }
+
+
+    public Optional<AuthorDto> patchAuthor(Long id, AuthorDto patchedAuthorDto) {
+        return authorRepository.findById(id)
+                .map(existingAuthor -> {
+                    if (patchedAuthorDto.getName() != null) {
+                        existingAuthor.setName(patchedAuthorDto.getName());
+                    }
+                    if (patchedAuthorDto.getAge() != null){
+                        existingAuthor.setAge(patchedAuthorDto.getAge());
+                    }
+
+                    existingAuthor =  authorRepository.save(existingAuthor);
+                    return authorMapper.mapTo(existingAuthor);
+                });
+    }
 }
